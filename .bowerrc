@@ -1,0 +1,6 @@
+{
+    "directory": "app/components",
+    "dependencies" : {
+	  "angular" : "PatternConsulting/bower-angular"
+	}
+}

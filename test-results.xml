@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<testsuites>
+  <testsuite name="Chrome 26.0 (Mac)" package="undefined" timestamp="2013-04-08T20:17:19" id="0" hostname="macbookpro-5efb.catmktg.com" tests="1" errors="0" failures="0" time="0.015">
+    <properties>
+      <property name="browser.fullName" value="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31"/>
+    </properties>
+    <testcase name="should attach a list of awesomeThings to the scope" time="0.015" classname="Chrome 26.0 (Mac).Controller: MainCtrl"/>
+    <system-out><![CDATA[Chrome 26.0 (Mac) ERROR
+	Uncaught SyntaxError: Unexpected token )
+	at /Library/WebServer/Documents/angular-hal/test/spec/services/halParser.js:50
+
+]]></system-out>
+    <system-err/>
+  </testsuite>
+</testsuites>

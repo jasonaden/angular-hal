@@ -1,0 +1,5 @@
+{
+  "dependencies" : {
+    "angular" : "PatternConsulting/bower-angular"
+  }
+}
