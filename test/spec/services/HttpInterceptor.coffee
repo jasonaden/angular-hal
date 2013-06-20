@@ -2,7 +2,7 @@
 ###jshint undef: true, unused: true###
 ###global SpecData###
 
-xdescribe 'Parse Campaign HAL', ->
+describe 'Parse Campaign HAL', ->
   beforeEach module 'HALParser'
   beforeEach module ($injector, $httpProvider, $provide) ->
     @data = new SpecData

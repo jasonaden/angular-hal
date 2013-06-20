@@ -5,7 +5,7 @@
 
 
 (function() {
-  xdescribe('Parse Campaign HAL', function() {
+  describe('Parse Campaign HAL', function() {
     beforeEach(module('HALParser'));
     beforeEach(module(function($injector, $httpProvider, $provide) {
       this.data = new SpecData;
