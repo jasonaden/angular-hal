@@ -8,6 +8,7 @@ do (ng=angular, mod=angular.module('Services', [])) ->
     _name = ''
     _url = ''
     _urlPrefix = '/api'
+    _contentType = 'application/json+hal'
 
     # The instance-classes are returned at the end of the factory and can be injected (unmodified)
     class BaseService
@@ -15,6 +16,7 @@ do (ng=angular, mod=angular.module('Services', [])) ->
         _name = name
         _url = url
         if options.urlPrefix then _urlPrefix = options.urlPrefix
+        if options.contentType then _contentType = options.contentType
         # wire up the events and hooks
         {
           @beforeRequest,
@@ -31,29 +33,40 @@ do (ng=angular, mod=angular.module('Services', [])) ->
       ### Generic send method ###
       send: (args) =>
         args.url = if _urlPrefix then _urlPrefix + args.url else args.url
-
+        args.headers = { Accept: _contentType }
         if @beforeRequest then @beforeRequest data
 
         @status = 'sending'
         #$log.log('sending', args)
 
-        ###$http(args).then (data) =>
-          @status = null
-          if @afterRequest then @afterRequest data else return data###
-
-        sendDefer = $q.defer();
         $http(args).then (data) =>
           @status = null
-          if @afterRequest then sendDefer.resolve @afterRequest data else sendDefer.resolve data
-
-        return sendDefer.promise
+          if @afterRequest then @afterRequest data else return data
 
       ### Generic save method ###
       save: (data) ->
-        $log.log('saving', data)
+        requestData =
+          method: 'POST'
+          url: _url
+          data: data
+
+
         if @beforeSave
-          data = @beforeSave data
-        @send data
+          requestData = @beforeSave requestData
+        @send requestData
+
+      update: (id, data) ->
+        requestData =
+          method: 'PUT'
+          url: _url + '/' + id
+          data: data
+
+        $log.log('updating', data)
+        if @beforeSave
+          requestData = @beforeSave requestData
+        @send requestData
+
+
 
       ### Get a list of items ###
       list: ->

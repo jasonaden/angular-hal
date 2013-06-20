@@ -4,11 +4,12 @@
   (function(ng, mod) {
     var Base;
     Base = function($log, $http, $q) {
-      var BaseService, _cache, _name, _url, _urlPrefix;
+      var BaseService, _cache, _contentType, _name, _url, _urlPrefix;
       _cache = {};
       _name = '';
       _url = '';
       _urlPrefix = '/api';
+      _contentType = 'application/json+hal';
       return BaseService = (function() {
         function BaseService(name, url, options) {
           if (options == null) {
@@ -21,6 +22,9 @@
           if (options.urlPrefix) {
             _urlPrefix = options.urlPrefix;
           }
+          if (options.contentType) {
+            _contentType = options.contentType;
+          }
           this.beforeRequest = options.beforeRequest, this.afterRequest = options.afterRequest, this.onBeforeUpdate = options.onBeforeUpdate, this.onAfterUpdate = options.onAfterUpdate, this.onBeforeLoad = options.onBeforeLoad, this.onAfterLoad = options.onAfterLoad, this.beforeSave = options.beforeSave, this.afterSave = options.afterSave;
         }
 
@@ -30,39 +34,53 @@
 
 
         BaseService.prototype.send = function(args) {
-          var sendDefer,
-            _this = this;
+          var _this = this;
           args.url = _urlPrefix ? _urlPrefix + args.url : args.url;
+          args.headers = {
+            Accept: _contentType
+          };
           if (this.beforeRequest) {
             this.beforeRequest(data);
           }
           this.status = 'sending';
-          /*$http(args).then (data) =>
-            @status = null
-            if @afterRequest then @afterRequest data else return data
-          */
-
-          sendDefer = $q.defer();
-          $http(args).then(function(data) {
+          return $http(args).then(function(data) {
             _this.status = null;
             if (_this.afterRequest) {
-              return sendDefer.resolve(_this.afterRequest(data));
+              return _this.afterRequest(data);
             } else {
-              return sendDefer.resolve(data);
+              return data;
             }
           });
-          return sendDefer.promise;
         };
 
         /* Generic save method*/
 
 
         BaseService.prototype.save = function(data) {
-          $log.log('saving', data);
+          var requestData;
+          requestData = {
+            method: 'POST',
+            url: _url,
+            data: data
+          };
           if (this.beforeSave) {
-            data = this.beforeSave(data);
+            requestData = this.beforeSave(requestData);
           }
-          return this.send(data);
+          return this.send(requestData);
+        };
+
+        BaseService.prototype.update = function(id, data) {
+          var requestData;
+          requestData = {
+            method: 'PUT',
+            url: _url + '/' + id,
+            data: data
+          };
+          $log.log('updating', data);
+          if (this.beforeSave) {
+            requestData = this.beforeSave(requestData);
+          }
+          return this.send(requestData);
         };
 
         /* Get a list of items*/

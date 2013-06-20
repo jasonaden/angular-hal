@@ -15,9 +15,11 @@ describe('BaseService has methods for talking to the backend', function() {
     $q = $injector.get('$q');
     $httpBackend = $injector.get('$httpBackend');
     $rootScope = $injector.get('$rootScope');
-    $httpBackend.when('GET', '/api/base/123').respond(200, {id:1,foo:'bar'});
+    $httpBackend.when('GET', '/api/base/123').respond(200,{id:1,foo:'bar'});
     $httpBackend.when('GET', '/api/base/12').respond(400);
     $httpBackend.when('GET', '/api/base').respond([1,2,3]);
+    $httpBackend.when('POST', '/api/base').respond(200);
+    $httpBackend.when('PUT', '/api/base/2').respond(200);
   }));
 
   // instantiate service
@@ -61,15 +63,15 @@ describe('BaseService has methods for talking to the backend', function() {
     expect(baseInstance.status).toBeNull();
   });
 
-  it('should successfully retrieve results from the server', function () {
-    var baseInstance = new baseService('Base', '/base');
+  it('should retrieve results from the server', function () {
+    var baseInstance = new baseService('Base', '/base', {contentType:'application/json+hal'});
 
     //valid get
     baseInstance.get('123').then(function(res){
       expect(res.status).toBe(200);
+      expect(res.config.headers.Accept).toContain('application/json+hal');
       expect(res.data.id).toBe(1);
       expect(res.data.foo).toBe('bar');
-
     });
     $httpBackend.flush();
 
@@ -86,6 +88,24 @@ describe('BaseService has methods for talking to the backend', function() {
     });
     $httpBackend.flush();
 
+  });
+
+  it('should save new records', function(){
+    var baseInstance = new baseService('Base', '/base');
+
+    baseInstance.save({id:2,foo:'bar'}).then(function(res){
+      expect(res.status).toBe(200);
+    });
+    $httpBackend.flush();
+  });
+
+  it('should update records', function(){
+    var baseInstance = new baseService('Base', '/base');
+
+    baseInstance.update(2, {id:2,foo:'bar'}).then(function(res){
+      expect(res.status).toBe(200);
+    });
+    $httpBackend.flush();
   });
 
 });
