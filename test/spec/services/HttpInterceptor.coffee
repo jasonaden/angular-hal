@@ -30,7 +30,7 @@ describe 'Parse Campaign HAL', ->
 
     return
 
-  iit 'should read hal-json at the $interceptor phase', ->
+  it 'should read hal-json at the $interceptor phase', ->
     inject ($http, $httpBackend) ->
       $httpBackend.expect('GET', '/url').respond('testData', {
         'Content-Type' : 'application/hal+json'

@@ -1,5 +1,5 @@
 # Factories are used to give each class it's own dependency management
-((ng, mod) ->
+do (ng=angular, mod=angular.module('Services', [])) ->
 
   Base = ($log, $http, $q) ->
 
@@ -8,6 +8,7 @@
     _name = ''
     _url = ''
     _urlPrefix = '/api'
+    _contentType = 'application/json+hal'
 
     # The instance-classes are returned at the end of the factory and can be injected (unmodified)
     class BaseService
@@ -15,6 +16,7 @@
         _name = name
         _url = url
         if options.urlPrefix then _urlPrefix = options.urlPrefix
+        if options.contentType then _contentType = options.contentType
         # wire up the events and hooks
         {
           @beforeRequest,
@@ -22,15 +24,20 @@
           @onBeforeUpdate,
           @onAfterUpdate,
           @onBeforeLoad,
-          @onAfterLoad
+          @onAfterLoad,
+          @beforeSave,
+          @afterSave
         } = options
       # Used to publish the status of the base service. This is not working right, as evidenced by the unit tests
       @status: null
       ### Generic send method ###
       send: (args) =>
         args.url = if _urlPrefix then _urlPrefix + args.url else args.url
+        args.headers = { Accept: _contentType }
+        if @beforeRequest then @beforeRequest data
+
         @status = 'sending'
-        $log.log('sending', args)
+        #$log.log('sending', args)
 
         $http(args).then (data) =>
           @status = null
@@ -38,10 +45,28 @@
 
       ### Generic save method ###
       save: (data) ->
-        $log.log('saving', data)
+        requestData =
+          method: 'POST'
+          url: _url
+          data: data
+
+
         if @beforeSave
-          data = @beforeSave data
-        @send data
+          requestData = @beforeSave requestData
+        @send requestData
+
+      update: (id, data) ->
+        requestData =
+          method: 'PUT'
+          url: _url + '/' + id
+          data: data
+
+        $log.log('updating', data)
+        if @beforeSave
+          requestData = @beforeSave requestData
+        @send requestData
+
+
 
       ### Get a list of items ###
       list: ->
@@ -54,8 +79,8 @@
   Base.$inject = ['$log', '$http', '$q']
 
 
-  mod
-  .factory('BaseService', Base);
+  mod.factory 'BaseService', Base
+
   ###.factory('ParentObject', ['BaseObject', '$cookies', (BaseObject, $cookies) ->
     class ParentObject extends BaseObject
       constructor: (options) ->
@@ -83,4 +108,3 @@
     SingletonObject.get().then (data) ->
       $scope.options = data
   ])###
-)(angular, angular.module('Services', []))
