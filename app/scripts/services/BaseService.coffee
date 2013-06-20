@@ -1,5 +1,5 @@
 # Factories are used to give each class it's own dependency management
-((ng, mod) ->
+do (ng=angular, mod=angular.module('Services', [])) ->
 
   Base = ($log, $http, $q) ->
 
@@ -22,19 +22,31 @@
           @onBeforeUpdate,
           @onAfterUpdate,
           @onBeforeLoad,
-          @onAfterLoad
+          @onAfterLoad,
+          @beforeSave,
+          @afterSave
         } = options
       # Used to publish the status of the base service. This is not working right, as evidenced by the unit tests
       @status: null
       ### Generic send method ###
       send: (args) =>
         args.url = if _urlPrefix then _urlPrefix + args.url else args.url
-        @status = 'sending'
-        $log.log('sending', args)
 
+        if @beforeRequest then @beforeRequest data
+
+        @status = 'sending'
+        #$log.log('sending', args)
+
+        ###$http(args).then (data) =>
+          @status = null
+          if @afterRequest then @afterRequest data else return data###
+
+        sendDefer = $q.defer();
         $http(args).then (data) =>
           @status = null
-          if @afterRequest then @afterRequest data else return data
+          if @afterRequest then sendDefer.resolve @afterRequest data else sendDefer.resolve data
+
+        return sendDefer.promise
 
       ### Generic save method ###
       save: (data) ->
@@ -54,8 +66,8 @@
   Base.$inject = ['$log', '$http', '$q']
 
 
-  mod
-  .factory('BaseService', Base);
+  mod.factory 'BaseService', Base
+
   ###.factory('ParentObject', ['BaseObject', '$cookies', (BaseObject, $cookies) ->
     class ParentObject extends BaseObject
       constructor: (options) ->
@@ -83,4 +95,3 @@
     SingletonObject.get().then (data) ->
       $scope.options = data
   ])###
-)(angular, angular.module('Services', []))

@@ -11,7 +11,8 @@ module.exports = function (grunt) {
   // configurable paths
   var yeomanConfig = {
     app: 'app',
-    dist: 'dist'
+    dist: 'dist',
+    test: 'test'
   };
 
   try {
@@ -24,6 +25,10 @@ module.exports = function (grunt) {
       coffee: {
         files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
         tasks: ['coffee:dist']
+      },
+      coffeeDev: {
+        files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
+        tasks: ['coffee:dev']
       },
       coffeeTest: {
         files: ['test/spec/{,*/}*.coffee'],
@@ -102,6 +107,9 @@ module.exports = function (grunt) {
       unit: {
         configFile: 'karma.conf.js',
         singleRun: true
+      },
+      watch: {
+        configFile: 'karma.conf.js'
       }
     },
     coffee: {
@@ -114,12 +122,21 @@ module.exports = function (grunt) {
           ext: '.js'
         }]
       },
+      dev: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/scripts',
+          src: '{,*/}*.coffee',
+          dest: '<%= yeoman.app %>/scripts',
+          ext: '.js'
+        }]
+      },
       test: {
         files: [{
           expand: true,
           cwd: 'test/spec',
           src: '{,*/}*.coffee',
-          dest: '.tmp/spec',
+          dest: 'test/spec',
           ext: '.js'
         }]
       }
@@ -281,7 +298,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'jshint',
+    //'jshint',
     'test',
     'coffee',
     'compass:dist',

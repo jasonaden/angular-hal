@@ -3,7 +3,7 @@
 
 'use strict';
 
-describe('Parse Campaign HAL', function() {
+xdescribe('Parse Campaign HAL', function() {
   var data, HalParser, parser;
 
   // load the service's module

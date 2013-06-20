@@ -1,5 +1,4 @@
-
-((ng, mod) ->
+do (ng=angular, mod=angular.module('HALParser', [])) ->
 
   removeNamespace = (name, ns) ->
     if name.substr(0,ns.length) is ns then name.substr(ns.length) else name
@@ -43,6 +42,4 @@
         @href = link.href
         @title = link.title or ''
 
-  mod.constant('HALParser', Parser);
-
-)(angular, angular.module('HALParser', []))
+  mod.constant 'HALParser', Parser
