@@ -31,15 +31,16 @@ do (ng=angular, mod=angular.module('Services', [])) ->
       # Used to publish the status of the base service. This is not working right, as evidenced by the unit tests
       @status: null
       ### Generic send method ###
-      send: (args) =>
-        args.url = if _urlPrefix then _urlPrefix + args.url else args.url
-        args.headers = { Accept: _contentType }
-        if @beforeRequest then @beforeRequest data
+      send: (requestData) ->
+        requestData.url = if _urlPrefix then _urlPrefix + requestData.url else requestData.url
+        requestData.headers = { Accept: _contentType }
+        if @beforeRequest
+          requestData.data = @beforeRequest requestData.data
 
         @status = 'sending'
         #$log.log('sending', args)
 
-        $http(args).then (data) =>
+        $http(requestData).then (data) =>
           @status = null
           if @afterRequest then @afterRequest data else return data
 
@@ -52,7 +53,7 @@ do (ng=angular, mod=angular.module('Services', [])) ->
 
 
         if @beforeSave
-          requestData = @beforeSave requestData
+          requestData.data = @beforeSave requestData.data
         @send requestData
 
       update: (id, data) ->
@@ -63,7 +64,7 @@ do (ng=angular, mod=angular.module('Services', [])) ->
 
         $log.log('updating', data)
         if @beforeSave
-          requestData = @beforeSave requestData
+          requestData.data = @beforeSave requestData.data
         @send requestData
 
 

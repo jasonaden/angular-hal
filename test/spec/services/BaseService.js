@@ -109,3 +109,55 @@ describe('BaseService has methods for talking to the backend', function() {
   });
 
 });
+
+
+describe('BaseService should call configurable methods and fire events on http actions', function() {
+  var data, baseService, $rootScope, $httpBackend, $q;
+
+  // load the service's module
+  beforeEach(module('Services'));
+
+  // Load up the HAL data
+  beforeEach(inject(function ($injector) {
+    data = new SpecData();
+    $q = $injector.get('$q');
+    $httpBackend = $injector.get('$httpBackend');
+    $rootScope = $injector.get('$rootScope');
+    $httpBackend.when('GET', '/api/base/123').respond(200,{id:1,foo:'bar'});
+    $httpBackend.when('GET', '/api/base/12').respond(400);
+    $httpBackend.when('GET', '/api/base').respond([1,2,3]);
+    $httpBackend.when('POST', '/api/base').respond(200);
+    $httpBackend.when('PUT', '/api/base/2').respond(200);
+  }));
+
+  // instantiate service
+  beforeEach(inject(function(BaseService) {
+    baseService = BaseService;
+  }));
+
+  it('should call beforeRequest on any request', function () {
+    var data = {},
+      ret,
+      config = {
+        beforeRequest: function (data) {
+          data.key = 'beforeRequest';
+          return data;
+        },
+        afterRequest: function (data) {
+          data.key = 'afterRequest';
+        }
+      },
+      baseInstance = new baseService('Base', '/base', config);
+
+    baseInstance.update(2, data);
+    expect(data.key).toBe('beforeRequest')
+      .then(function (returnData) {
+        ret = returnData;
+      });
+    $httpBackend.flush();
+    expect(ret.key).toBe('afterRequest');
+
+
+  });
+
+});
