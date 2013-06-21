@@ -61,7 +61,7 @@
             if (name == null) {
               name = '';
             }
-            key = name === 'self' ? name : name.substr(0, ns.length) === ns ? name : ns + name;
+            key = name === 'self' ? name : resourceLinks[name] ? name : ns + ':' + name;
             if (resourceLinks[key]) {
               return resourceLinks[key];
             } else {

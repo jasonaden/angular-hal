@@ -25,7 +25,7 @@ do (ng=angular, mod=angular.module('HALParser', [])) ->
           @[removeNamespace name, ns] = if ng.isArray prop then new Parser(ns).parse em, ns for em in prop else new Parser(ns).parse prop, ns
 
         @links = (name = '') ->
-          key = if name is 'self' then name else if name.substr(0,ns.length) is ns then name else ns + name
+          key = if name is 'self' then name else if resourceLinks[name] then name else ns + ':' + name
           if resourceLinks[key] then resourceLinks[key] else resourceLinks
 
     class Links

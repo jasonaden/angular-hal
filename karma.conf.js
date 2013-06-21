@@ -6,14 +6,13 @@ basePath = '';
 // list of files / patterns to load in the browser
 files = [
   JASMINE,
-  'jasmine-additions.js',
+  //'jasmine-additions.js',
   JASMINE_ADAPTER,
-  'app/components/angular/angular.js',
-  'app/components/angular/angular-mocks.js',
-  'app/scripts/*.js',
-  'app/scripts/**/*.js',
+  'components/angular/angular.js',
+  'components/angular/angular-mocks.js',
+  'src/*.js',
   'test/fixtures/**/*.js',
-  'test/spec/**/*.js'
+  'test/spec/*.js'
 ];
 
 // list of files to exclude
