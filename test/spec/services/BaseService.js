@@ -20,6 +20,8 @@ describe('BaseService has methods for talking to the backend', function() {
     $httpBackend.when('GET', '/api/base').respond([1,2,3]);
     $httpBackend.when('POST', '/api/base').respond(200);
     $httpBackend.when('PUT', '/api/base/2').respond(200);
+    $httpBackend.when('PATCH', '/api/base/123').respond(200);
+    $httpBackend.when('DELETE', '/api/base/123').respond(200);
   }));
 
   // instantiate service
@@ -64,12 +66,12 @@ describe('BaseService has methods for talking to the backend', function() {
   });
 
   it('should retrieve results from the server', function () {
-    var baseInstance = new baseService('Base', '/base', {contentType:'application/json+hal'});
+    var baseInstance = new baseService('Base', '/base', {contentType:'application/hal+json'});
 
     //valid get
     baseInstance.get('123').then(function(res){
       expect(res.status).toBe(200);
-      expect(res.config.headers.Accept).toContain('application/json+hal');
+      expect(res.config.headers.Accept).toContain('application/hal+json');
       expect(res.data.id).toBe(1);
       expect(res.data.foo).toBe('bar');
     });
@@ -108,6 +110,24 @@ describe('BaseService has methods for talking to the backend', function() {
     $httpBackend.flush();
   });
 
+  it('should patch records', function(){
+    var baseInstance = new baseService('Base', '/base');
+
+    baseInstance.patch(123, {id:123,foo:'bar2'}).then(function(res){
+      expect(res.status).toBe(200);
+    });
+    $httpBackend.flush();
+  });
+
+  it('should delete records', function(){
+    var baseInstance = new baseService('Base', '/base');
+
+    baseInstance.delete(123).then(function(res){
+      expect(res.status).toBe(200);
+    });
+    $httpBackend.flush();
+  });
+
 });
 
 
@@ -127,7 +147,7 @@ describe('BaseService should call configurable methods and fire events on http a
     $httpBackend.when('GET', '/api/base/12').respond(400);
     $httpBackend.when('GET', '/api/base').respond([1,2,3]);
     $httpBackend.when('POST', '/api/base').respond(200);
-    $httpBackend.when('PUT', '/api/base/2').respond(200);
+    $httpBackend.when('PUT', '/api/base/2').respond(200, {});
   }));
 
   // instantiate service
@@ -139,23 +159,25 @@ describe('BaseService should call configurable methods and fire events on http a
     var data = {},
       ret,
       config = {
-        beforeRequest: function (data) {
-          data.key = 'beforeRequest';
-          return data;
+        beforeRequest: function (request) {
+          request.data.key = 'beforeRequest';
+          return request;
         },
-        afterRequest: function (data) {
-          data.key = 'afterRequest';
+        afterRequest: function (req2) {
+          req2.data.key = 'afterRequest';
+          return req2;
         }
       },
       baseInstance = new baseService('Base', '/base', config);
 
-    baseInstance.update(2, data);
-    expect(data.key).toBe('beforeRequest')
+    baseInstance.update(2, data)
       .then(function (returnData) {
         ret = returnData;
       });
+    expect(data.key).toBe('beforeRequest');
     $httpBackend.flush();
-    expect(ret.key).toBe('afterRequest');
+    console.log('aft stuff', ret.data);
+    expect(ret.data.key).toBe('afterRequest');
 
 
   });

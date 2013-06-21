@@ -6,6 +6,7 @@
     var Parser, removeNamespace;
 
     removeNamespace = function(name, ns) {
+      ns = ns ? ns + ':' : '';
       if (name.substr(0, ns.length) === ns) {
         return name.substr(ns.length);
       } else {
@@ -34,7 +35,7 @@
         function Resource(data, links, embedded, ns) {
           var em, name, prop, resourceLinks;
 
-          ns = ns ? ns + ':' : '';
+          ns = ns ? ns : '';
           angular.extend(this, data);
           resourceLinks = new Links(links);
           for (name in embedded) {

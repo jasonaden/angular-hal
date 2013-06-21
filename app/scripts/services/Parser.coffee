@@ -1,6 +1,7 @@
 do (ng=angular, mod=angular.module('HALParser', [])) ->
 
   removeNamespace = (name, ns) ->
+    ns = if ns then ns + ':' else ''
     if name.substr(0,ns.length) is ns then name.substr(ns.length) else name
 
   class Parser
@@ -16,7 +17,7 @@ do (ng=angular, mod=angular.module('HALParser', [])) ->
 
     class Resource
       constructor: (data, links, embedded, ns) ->
-        ns = if ns then ns + ':' else ''
+        ns = if ns then ns else ''
         angular.extend @, data
         resourceLinks = new Links links
 

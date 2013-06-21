@@ -18,31 +18,37 @@ do (ng=angular, mod=angular.module('Services', [])) ->
         if options.urlPrefix then _urlPrefix = options.urlPrefix
         if options.contentType then _contentType = options.contentType
         # wire up the events and hooks
-        {
-          @beforeRequest,
-          @afterRequest,
-          @onBeforeUpdate,
-          @onAfterUpdate,
-          @onBeforeLoad,
-          @onAfterLoad,
-          @beforeSave,
-          @afterSave
-        } = options
+        hooks = ['beforeRequest',
+                 'afterRequest',
+                 'onBeforeUpdate',
+                 'onAfterUpdate',
+                 'onBeforeLoad',
+                 'onAfterLoad',
+                 'beforeSave',
+                 'afterSave']
+        for hook in hooks
+          if !@[hook] then @[hook] = []
+          if options[hook]
+            if ng.isArray(options[hook])
+              @[hook] = options[hook]
+            else
+              @[hook].push options[hook]
+
       # Used to publish the status of the base service. This is not working right, as evidenced by the unit tests
       @status: null
       ### Generic send method ###
       send: (requestData) ->
         requestData.url = if _urlPrefix then _urlPrefix + requestData.url else requestData.url
         requestData.headers = { Accept: _contentType }
-        if @beforeRequest
-          requestData.data = @beforeRequest requestData.data
+        if @beforeRequest.length
+          (method requestData for method in @beforeRequest)
 
         @status = 'sending'
-        #$log.log('sending', args)
 
         $http(requestData).then (data) =>
           @status = null
-          if @afterRequest then @afterRequest data else return data
+          if @afterRequest.length
+            (method data for method in @afterRequest)
 
       ### Generic save method ###
       save: (data) ->
@@ -51,10 +57,11 @@ do (ng=angular, mod=angular.module('Services', [])) ->
           url: _url
           data: data
 
-
-        if @beforeSave
-          requestData.data = @beforeSave requestData.data
-        @send requestData
+        if @beforeSave.length
+          (method requestData for method in @beforeSave)
+        @send(requestData).then (res) ->
+          if @afterSave
+            requestData = @afterSave res
 
       update: (id, data) ->
         requestData =
@@ -63,18 +70,29 @@ do (ng=angular, mod=angular.module('Services', [])) ->
           data: data
 
         $log.log('updating', data)
-        if @beforeSave
-          requestData.data = @beforeSave requestData.data
+        if @beforeSave.length
+          (method requestData for method in @beforeSave)
         @send requestData
 
+      patch: (id, data) ->
+        requestData =
+          method: 'PATCH'
+          url: _url + '/' + id
+          data: data
 
+        if @beforeSave.length
+          (method requestData for method in @beforeSave)
+        @send requestData
+
+      delete: (id) ->
+        @send {method: 'DELETE', url: _url + '/' + id}
 
       ### Get a list of items ###
       list: ->
         @send {method: 'GET', url: _url}
 
       ### Get a specific item ###
-      get: (id) =>
+      get: (id) ->
         @send {method: 'GET', url: _url + '/' + id}
 
   Base.$inject = ['$log', '$http', '$q']

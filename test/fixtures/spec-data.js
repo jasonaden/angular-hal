@@ -76,6 +76,33 @@ SpecData.prototype.basicHal = {
   shippedToday: 20
 };
 
+SpecData.prototype.namespaceHal = {
+  '_links': {
+    'self': { 'href': '/orders' }
+  },
+  '_embedded': {
+    'cp:items': [
+      {
+        '_links': {
+          'self': { 'href': '/items/1' }
+        },
+        '_embedded': {
+          'cp:user': {
+            '_links': {
+              'self': { 'href': '/user/1' }
+            },
+            'name': 'User One'
+          }
+        },
+        'name': 'Order One'
+      }
+    ]
+  },
+  currentlyProcessing: 14,
+  shippedToday: 20
+};
+
+
 
 SpecData.prototype.complexHal = {
     '_links': {

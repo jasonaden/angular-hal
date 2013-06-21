@@ -59,4 +59,14 @@ describe('Parse Campaign HAL', function() {
     expect(asset.asset[0].name).toBe('one');
     expect(asset2.asset[0].name).toBe('one');
   });
+
+  iit('should parse namespaces', function () {
+    var parsed = parser.parse(data.namespaceHal);
+    expect(parsed.currentlyProcessing).toBe(14);
+    expect(parsed.items).toBeDefined();
+    expect(parsed.items[0].name).toBe('Order One');
+    expect(parsed.items[0].user).toBeDefined();
+    expect(parsed.items[0].user.name).toBe('User One');
+
+  });
 });
