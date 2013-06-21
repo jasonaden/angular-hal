@@ -28,22 +28,17 @@ describe 'Parse Campaign HAL', ->
         # return the original promise
         return promise
 
-    return
 
   it 'should read hal-json at the $interceptor phase', ->
     inject ($http, $httpBackend) ->
-      $httpBackend.expect('GET', '/url').respond('testData', {
-        'Content-Type' : 'application/hal+json'
-      });
+      $httpBackend.expect('GET', '/url', undefined, {Accept:'application/hal+json'}).respond('testData');
       $http({
         method: 'GET'
         url: '/url'
+        headers: { Accept: 'application/hal+json' }
       })
       .then (data) ->
-        console.log data
-      , (err) ->
-        console.log err
+        expect(data.data).toBe('testData');
       $httpBackend.flush()
-    return
 
-  return
+

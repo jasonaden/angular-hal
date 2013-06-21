@@ -50,7 +50,6 @@ do (ng=angular, mod=angular.module('Services', [])) ->
           url: _url
           data: data
 
-
         if @beforeSave
           requestData = @beforeSave requestData
         @send requestData
@@ -66,7 +65,18 @@ do (ng=angular, mod=angular.module('Services', [])) ->
           requestData = @beforeSave requestData
         @send requestData
 
+      patch: (id, data) ->
+        requestData =
+          method: 'PATCH'
+          url: _url + '/' + id
+          data: data
 
+        if @beforeSave
+          requestData = @beforeSave requestData
+        @send requestData
+
+      delete: (id) ->
+        @send {method: 'DELETE', url: _url + '/' + id}
 
       ### Get a list of items ###
       list: ->

@@ -83,6 +83,26 @@
           return this.send(requestData);
         };
 
+        BaseService.prototype.patch = function(id, data) {
+          var requestData;
+          requestData = {
+            method: 'PATCH',
+            url: _url + '/' + id,
+            data: data
+          };
+          if (this.beforeSave) {
+            requestData = this.beforeSave(requestData);
+          }
+          return this.send(requestData);
+        };
+
+        BaseService.prototype["delete"] = function(id) {
+          return this.send({
+            method: 'DELETE',
+            url: _url + '/' + id
+          });
+        };
+
         /* Get a list of items*/
 
 
