@@ -1,4 +1,6 @@
 {
+  "name": "angular-hal",
+  "version": "0.0.1",
   "dependencies" : {
     "angular" : "PatternConsulting/bower-angular"
   }
