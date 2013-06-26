@@ -19,7 +19,7 @@ do (ng=angular, mod=angular.module('HALParser', [])) ->
       constructor: (data, links, embedded, ns) ->
         ns = if ns then ns else ''
         angular.extend @, data
-        resourceLinks = new Links links
+        resourceLinks = if links then new Links links else {}
 
         for name, prop of embedded
           @[removeNamespace name, ns] = if ng.isArray prop then new Parser(ns).parse em, ns for em in prop else new Parser(ns).parse prop, ns

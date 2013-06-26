@@ -44,6 +44,11 @@ SpecData.prototype.basicHal = {
   shippedToday: 20
 };
 
+SpecData.prototype.basicHalNoLinks = {
+  currentlyProcessing: 14,
+  shippedToday: 20
+};
+
 SpecData.prototype.namespaceHal = {
   '_links': {
     'self': { 'href': '/orders' }

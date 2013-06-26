@@ -33,6 +33,15 @@ describe "Parse HAL", ->
     # Get specific link
     expect(parsed.links('self').href).toBe '/dummy'
 
+  it "should allow _links to not exist", ->
+    parsed = parser.parse(data.basicHalNoLinks)
+
+    # Make sure links is a method
+    expect(parsed.links).toBeDefined()
+    expect(typeof parsed.links).toBe 'function'
+    # Get collection of links as object
+    #expect(typeof parsed.links()).toBe 'object'
+
   it "should parse empty HAL data", ->
     parsed = parser.parse(data.simpleHal)
 
@@ -45,7 +54,7 @@ describe "Parse HAL", ->
   it "should throw an error on bad HAL data", ->
     expect(parser.parse.bind(null, data.noHref)).toThrow()
     expect(parser.parse.bind(null, data.noSelf)).toThrow()
-    expect(parser.parse.bind(null, data.noLinks)).toThrow()
+    expect(parser.parse.bind(null, data.noLinks)).not.toThrow()
 
   it "should parse basic HAL data", ->
     parsed = parser.parse(data.basicHal)

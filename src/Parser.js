@@ -34,7 +34,7 @@
           var em, name, prop, resourceLinks;
           ns = ns ? ns : '';
           angular.extend(this, data);
-          resourceLinks = new Links(links);
+          resourceLinks = links ? new Links(links) : {};
           for (name in embedded) {
             prop = embedded[name];
             this[removeNamespace(name, ns)] = (function() {
