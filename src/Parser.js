@@ -102,7 +102,7 @@
           if (!(link != null ? link.href : void 0)) {
             throw 'href is required for all links';
           }
-          this.href = link.href, this.name = link.name;
+          this.href = link.href, this.name = link.name, this.profile = link.profile;
           this.templated = !!link.templated;
           this.title = link.title || '';
         }

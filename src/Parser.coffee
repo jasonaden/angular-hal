@@ -39,7 +39,7 @@ do (ng=angular, mod=angular.module('HALParser', [])) ->
       constructor: (link, ns) ->
         if !link?.href
           throw 'href is required for all links'
-        {@href, @name} = link
+        {@href, @name, @profile} = link
         @templated = !!link.templated
         @title = link.title or ''
 
